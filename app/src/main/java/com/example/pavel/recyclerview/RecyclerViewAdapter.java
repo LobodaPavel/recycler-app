@@ -28,11 +28,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
     private static final String TAG = "RecyclerViewAdapter";
 
-    private Bus bus;
-
     private ArrayList<String> itemText = new ArrayList<>();
     private ArrayList<String> itemImages = new ArrayList<>();
     private Context mContext;
+    private Bus bus = new Bus();
 
     public RecyclerViewAdapter(ArrayList<String> itemText, ArrayList<String> itemImages, Context mContext) {
         this.itemText = itemText;
@@ -63,32 +62,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Clicked!");
                 Toast.makeText(mContext, "Clicked on: "+itemText.get(position), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Item : clicked");
 
-                bus = new Bus();
+                bus.post(new MainActivity());
+
+                Log.d(TAG, "Bus: posted for new Main Activity");
+
                 bus.register(this);
 
-                Log.d(TAG, "Bus: registered");
+                Log.d(TAG, "Bus:listener registered");
             }
         });
 
     }
-
-    private void listenChangeActivity(){
-
-
-        bus.post(new MainActivity());
-
-        Log.d(TAG, "Событие зарегистрировано");
-    }
     @Subscribe
     public void changeActivity(MainActivity activity){
+
         Log.d(TAG, "Событие начало выполняться");
         Intent changeActivity = new Intent(mContext, ProfileActivity.class);
         Log.d(TAG, "activity.startActivity(Intent)");
-        activity.startActivity(changeActivity); // Crash
+        activity.startActivity(changeActivity);
         Log.d(TAG, "Событие закончило выполняться");
     }
 

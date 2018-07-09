@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.squareup.otto.Bus;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> itemText = new ArrayList<>();
     private ArrayList<String> itemImages = new ArrayList<>();
+    private Bus mBus = new Bus();
 
 
     @Override

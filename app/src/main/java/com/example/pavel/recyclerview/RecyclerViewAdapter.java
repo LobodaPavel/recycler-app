@@ -13,8 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -31,7 +34,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> itemText = new ArrayList<>();
     private ArrayList<String> itemImages = new ArrayList<>();
     private Context mContext;
-    private Bus bus = new Bus();
 
     public RecyclerViewAdapter(ArrayList<String> itemText, ArrayList<String> itemImages, Context mContext) {
         this.itemText = itemText;
@@ -45,7 +47,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listitem, parent, false);
         ViewHolder holder = new ViewHolder(view);
+
+
+
+        //reg listener foe EB event
+        registerEventBusListener();
+
         return holder;
+    }
+
+    public void registerEventBusListener(){
+        Log.d(TAG, "Starting register listener method to "+this);
+        EventBus.getDefault().register(this);
+        Log.d(TAG, "New subscribe method created");
     }
 
     @Override
@@ -65,25 +79,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Toast.makeText(mContext, "Clicked on: "+itemText.get(position), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Item : clicked");
 
-                bus.post(new MainActivity());
-
-                Log.d(TAG, "Bus: posted for new Main Activity");
-
-                bus.register(this);
-
-                Log.d(TAG, "Bus:listener registered");
+                EventBus.getDefault().post(new MainActivity());
+                Log.d(TAG, "New event posted");
             }
         });
 
     }
-    @Subscribe
-    public void changeActivity(MainActivity activity){
 
-        Log.d(TAG, "Событие начало выполняться");
-        Intent changeActivity = new Intent(mContext, ProfileActivity.class);
-        Log.d(TAG, "activity.startActivity(Intent)");
-        activity.startActivity(changeActivity);
-        Log.d(TAG, "Событие закончило выполняться");
+
+
+    // This method will be called when a MainActivity is posted (in the UI thread for Toast)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MainActivity event) {
+        Log.d(TAG, "Change activity: called");
+        MainActivity activity = new MainActivity();
+        Log.d(TAG, "Main Activity object: created");
+        Intent intent = new Intent(mContext, ProfileActivity.class);
+        Log.d(TAG, "Intent: created to "+mContext);
+        activity.startActivity(intent);
+
+        Log.d(TAG, "Activity: changed");
     }
 
     @Override

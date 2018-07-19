@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         initImageBitmaps();
     }
+
     private void initImageBitmaps(){
         Log.d(TAG, "Starting itnting items");
 

@@ -53,14 +53,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return holder;
     }
 
-    public void registerEventBusListener(){
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            Log.d(TAG, "Starting register listener method to "+this);
-            EventBus.getDefault().register(this);
-            Log.d(TAG, "New subscribe method created");
-        }
-    }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
@@ -73,33 +65,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.itemText.setText(itemText.get(position));
 
-        registerEventBusListener();
-
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "Clicked on: "+itemText.get(position), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Item : clicked");
 
-                EventBus.getDefault().post(new MainActivity());
-                Log.d(TAG, "New event posted");
+                Log.d(TAG, "Change activity: called");
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                Log.d(TAG, "Intent: created ");
+
+                Log.d(TAG, "Intent: starting putting data ");
+
+                Log.d(TAG, "Intent: starting putting username  "+itemText.get(position));
+                intent.putExtra("username", itemText.get(position));
+
+                Log.d(TAG, "Starting activity with intent:   " + intent);
+                mContext.startActivity(intent);
+                Log.d(TAG, "Activity: changed");
             }
         });
 
     }
 
 
-
-    // This method will be called when a MainActivity is posted (in the UI thread for Toast)
-    @Subscribe
-    public void onMessageEvent(MainActivity event) {
-        Log.d(TAG, "Change activity: called");
-        Intent intent = new Intent(mContext, ProfileActivity.class);
-        Log.d(TAG, "Intent: created ");
-        Log.d(TAG, "Starting activity with intent:   " + intent);
-        event.startActivity(intent);
-        Log.d(TAG, "Activity: changed");
-    }
 
     @Override
     public int getItemCount() {

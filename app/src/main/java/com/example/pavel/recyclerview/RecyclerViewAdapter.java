@@ -80,6 +80,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Log.d(TAG, "Intent: starting putting username  "+itemText.get(position));
                 intent.putExtra("username", itemText.get(position));
 
+                Log.d(TAG, "Intent: starting putting user photo  "+itemText.get(position));
+                intent.putExtra("photo", itemImages.get(position));
+
                 Log.d(TAG, "Starting activity with intent:   " + intent);
                 mContext.startActivity(intent);
                 Log.d(TAG, "Activity: changed");

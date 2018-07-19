@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.EventBusException;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -49,17 +50,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ViewHolder holder = new ViewHolder(view);
 
 
-
-        //reg listener foe EB event
-        registerEventBusListener();
-
         return holder;
     }
 
     public void registerEventBusListener(){
-        Log.d(TAG, "Starting register listener method to "+this);
-        EventBus.getDefault().register(this);
-        Log.d(TAG, "New subscribe method created");
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            Log.d(TAG, "Starting register listener method to "+this);
+            EventBus.getDefault().register(this);
+            Log.d(TAG, "New subscribe method created");
+        }
     }
 
     @Override
@@ -72,6 +72,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .into(holder.itemImage);
 
         holder.itemText.setText(itemText.get(position));
+
+        registerEventBusListener();
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,15 +91,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
     // This method will be called when a MainActivity is posted (in the UI thread for Toast)
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe
     public void onMessageEvent(MainActivity event) {
         Log.d(TAG, "Change activity: called");
-        MainActivity activity = new MainActivity();
-        Log.d(TAG, "Main Activity object: created");
         Intent intent = new Intent(mContext, ProfileActivity.class);
-        Log.d(TAG, "Intent: created to "+mContext);
-        activity.startActivity(intent);
-
+        Log.d(TAG, "Intent: created ");
+        Log.d(TAG, "Starting activity with intent:   " + intent);
+        event.startActivity(intent);
         Log.d(TAG, "Activity: changed");
     }
 
